@@ -11,8 +11,6 @@ from typing import List, Tuple, Dict
 from utils import timeit
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
-
 CLASSIFICATION_MODEL = os.getenv('CLASSIFICATION_MODEL')
 
 # Get label
@@ -53,6 +51,7 @@ class DatasetList(torch.utils.data.Dataset):
     def __getitem__(self, index):
         image, coords = self.samples[index]  # coords [x1,y1,x2,y2]
         args = (image, coords)
+
         if self.transform is not None:
             sample = self.transform(args)
         return sample
@@ -89,11 +88,6 @@ class Classifier(object):
         self.classification_model = models.__dict__['resnet18'](pretrained=True)
         self.classification_model.fc = nn.Linear(512, CLASS_NUMBER)
         self.classification_model.load_state_dict(new_state_dict)
-        print(type(device))
-        if device.type == 'cuda' :
-            torch.cuda.set_device(device)
-            self.classification_model.cuda(device)
-
         self.classification_model.eval()
 
     def prediction(self, selected_boxes: Tuple[np.ndarray, List[float]]):
@@ -127,9 +121,6 @@ class Classifier(object):
         final_pred: List = list()
         final_prob: List = list()
         for inp in val_loader:
-            if device.type == 'cuda' :
-                inp = inp.cuda(device, non_blocking=True)
-
             output = self.classification_model(inp)
 
             softmax = nn.Softmax(dim=1)

@@ -3,25 +3,22 @@
 # include .env file
 include docker/conf.list
 
-export GPU
-
-ifeq ($(GPU),1)
-		export COMPOSE=docker-compose -p $(PROJECT_NAME) -f docker-compose.yml -f docker-compose-gpu.yml
-endif
-
 # compose command for dev env
 COMPOSE?=docker-compose -p $(PROJECT_NAME) -f docker-compose.yml
+
 # compose command for prod env
 ifeq ($(RESTART),1)
-	COMPOSE := $(COMPOSE) docker-restart.yml
+	COMPOSE:=docker-compose -p $(PROJECT_NAME) -f docker-compose.yml -f docker-restart.yml
 endif
 
 export
+
 
 # this is usefull with most python apps in dev mode because if stdout is
 # buffered logs do not shows in realtime
 PYTHONUNBUFFERED=1
 export PYTHONUNBUFFERED
+
 
 docker/env.list:
 	# Copy default config

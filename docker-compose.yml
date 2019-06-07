@@ -1,18 +1,12 @@
+---
 version: '2.3'
 services:
   matchvec:
     container_name: ${USER}-matchvec
     build:
-      context: ./docker/cpu
-      args:
-        - http_proxy=${http_proxy}
-        - https_proxy=${http_proxy}
+      context: ./docker/torch-flask
     env_file:
       - docker/env.list
-    environment:
-      - http_proxy=${http_proxy}
-      - https_proxy=${http_proxy}
-      - no_proxy=${no_proxy}
     expose:
       - ${APP_PORT}
     volumes:
